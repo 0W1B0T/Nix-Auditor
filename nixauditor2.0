@@ -155,30 +155,31 @@ fi
 #>https://benchmarks.cisecurity.org/tools2/linux/CIS_CentOS_Linux_7_Benchmark_v1.1.0.pdf
 #>https://benchmarks.cisecurity.org/tools2/linux/CIS_Red_Hat_Enterprise_Linux_7_Benchmark_v1.0.0.pdf
 #All credits to https://benchmarks.cisecurity.org. <<< Thanks Good People!!!
-echo For best results use root.** Always be root** *Evil grin* Credits, bugs, comments >>cto@the-infosec.com
+#echo For best results use root.** Always be root** *Evil grin* Credits, bugs, comments >>cto@the-infosec.com
 
 #The script doesn't change any config to your system, only many greps :-)
 # ***
--update manenos*
+#-update manenos*
 
 FSTAB='/etc/fstab'
-YUM_CONF='/etc/yum.conf'
-GRUB_CFG='/boot/grub2/grub.cfg'
+#YUM_CONF='/etc/yum.conf'
+GRUB_CFG='/boot/grub/grub.cfg'
 GRUB_DIR='/etc/grub.d'
-SELINUX_CFG='/etc/selinux/config'
-NTP_CONF='/etc/ntp.conf'
-SYSCON_NTPD='/etc/sysconfig/ntpd'
+#SELINUX_CFG='/etc/selinux/config'
+#NTP_CONF='/etc/ntp.conf'
+#SYSCON_NTPD='/etc/sysconfig/ntpd'
 LIMITS_CNF='/etc/security/limits.conf'
 SYSCTL_CNF='/etc/sysctl.conf'
-CENTOS_REL='/etc/centos-release'
-LATEST_REL_STR='CentOS Linux release 7.1.1503 (Core)'
+UbunOS_REL='/etc/os-release'
+#LATEST_REL_STR='CentOS Linux release 7.1.1503 (Core)'
 HOSTS_ALLOW='/etc/hosts.allow'
 HOSTS_DENY='/etc/hosts.deny'
-CIS_CNF='/etc/modprobe.d/CIS.conf'
+#CIS_CNF='/etc/modprobe.d/CIS.conf'
 RSYSLOG_CNF='/etc/rsyslog.conf'
-AUDITD_CNF='/etc/audit/auditd.conf'
-AUDIT_RULES='/etc/audit/audit.rules'
-LOGR_SYSLOG='/etc/logrotate.d/syslog'
+#Download AuditD 
+#AUDITD_CNF='/etc/audit/auditd.conf'
+#AUDIT_RULES='/etc/audit/audit.rules'
+LOGR_SYSLOG='/etc/logrotate.d/rsyslog'
 ANACRONTAB='/etc/anacrontab'
 CRONTAB='/etc/crontab'
 CRON_HOURLY='/etc/cron.hourly'
@@ -186,31 +187,32 @@ CRON_DAILY='/etc/cron.daily'
 CRON_WEEKLY='/etc/cron.weekly'
 CRON_MONTHLY='/etc/cron.monthly'
 CRON_DIR='/etc/cron.d'
-AT_ALLOW='/etc/at.allow'
-AT_DENY='/etc/at.deny'
-CRON_ALLOW='/etc/cron.allow'
-CRON_DENY='/etc/cron.deny'
+#AT_ALLOW='/etc/at.allow'
+#AT_DENY='/etc/at.deny'
+#CRON_ALLOW='/etc/cron.allow'
+#CRON_DENY='/etc/cron.deny'
 SSHD_CFG='/etc/ssh/sshd_config'
-SYSTEM_AUTH='/etc/pam.d/system-auth'
+#SYSTEM_AUTH='/etc/pam.d/system-auth'
 PWQUAL_CNF='/etc/security/pwquality.conf'
-PASS_AUTH='/etc/pam.d/password-auth'
+#PASS_AUTH='/etc/pam.d/password-auth'
 PAM_SU='/etc/pam.d/su'
 GROUP='/etc/group'
 LOGIN_DEFS='/etc/login.defs'
 PASSWD='/etc/passwd'
 SHADOW='/etc/shadow'
 GSHADOW='/etc/gshadow'
-BASHRC='/etc/bashrc'
+BASHRC='/etc/bash.bashrc'
 PROF_D='/etc/profile.d'
-MOTD='/etc/motd'
+#MOTD='/etc/motd'
 ISSUE='/etc/issue'
 ISSUE_NET='/etc/issue.net'
-BANNER_MSG='/etc/dconf/db/gdm.d/01-banner-message'
+#BANNER_MSG='/etc/dconf/db/gdm.d/01-banner-message'
 RED='\033[0;31m' # Red Font
 GREEN='\033[0;32m' # Green Font
 BLUE='\033[0;34m' # Blue Font
 NC='\033[0m' # No Color
 
+#Good
 function separate_partition {
   # Test that the supplied $1 is a separate partition
 
@@ -218,6 +220,7 @@ function separate_partition {
   grep -q "[[:space:]]${filesystem}[[:space:]]" "${FSTAB}" || return
 }
 
+#Good
 function mount_option {
   # Test the the supplied mount option $2 is in use on the supplied filesystem $1
 
@@ -228,7 +231,7 @@ function mount_option {
 
   mount | grep "[[:space:]]${filesystem}[[:space:]]" | grep -q "${mnt_option}" || return
 }
-
+#Good
 function bind_mounted_to {
   # Test that a directory /foo/dir is bind mounted onto a particular filesystem
 
@@ -251,6 +254,7 @@ function bind_mounted_to {
   fi
 }
 
+#Good
 function test_disable_mounting {
   # Test the the supplied filesystem type $1 is disabled
 
@@ -260,28 +264,29 @@ function test_disable_mounting {
   lsmod | grep -qv "${module}" || return
 }
 
-function centos_gpg_key_installed {
+#function centos_gpg_key_installed {
   # Test CentOS GPG Key is installed
-  local centos_off_str='gpg(CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>)'
-  rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey | grep -q "${centos_off_str}" || return
-}
+ # local centos_off_str='gpg(CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>)'
+#  rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey | grep -q "${centos_off_str}" || return
+#}
 
-function yum_gpgcheck {
+#function yum_gpgcheck {
   # Check that gpgcheck is Globally Activated
-  cut -d \# -f1 ${YUM_CONF} | grep 'gpgcheck' | grep -q 'gpgcheck=1' || return
-}
+#  cut -d \# -f1 ${YUM_CONF} | grep 'gpgcheck' | grep -q 'gpgcheck=1' || return
+#}
 
-function yum_update {
+#function yum_update {
   # Check for outstanding pkg update with yum
-  yum -q check-update || return
-}
+#  yum -q check-update || return
+#}
 
-function pkg_integrity {
+#install rpm
+#function pkg_integrity {
   # Verify the installed packages by comparing the installed files against file info stored in the pkg
-  local rpm_out
-  rpm_out="$(rpm -qVa | awk '$2 != "c" { print $0}')"
-  [[ -z "${rpm_out}" ]] || return
-}
+ # local rpm_out
+#  rpm_out="$(rpm -qVa | awk '$2 != "c" { print $0}')"
+#  [[ -z "${rpm_out}" ]] || return
+#}
 
 function rpm_installed {
   # Test whether an rpm is installed
