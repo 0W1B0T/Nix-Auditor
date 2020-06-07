@@ -1,4 +1,4 @@
-# Nix Auditor
+# Nix Auditor, System Hardening and Security
 CIS Audit made easier (RHEL, CentOS)
 
 Usage:
