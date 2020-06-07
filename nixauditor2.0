@@ -4,10 +4,9 @@
 usage () 
 { 
 echo -e "\n\e[00;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\e[00m" 
-echo -e "\e[00;31m#\e[00m" "\e[00;33m Nix Audit Script ^Tested on RHEL 6,7... CentOS 6,7 ^\e[00m" "\e[00;31m#\e[00m"
+echo -e "\e[00;31m#\e[00m" "\e[00;33m Nix Audit Script ^Tested on Ubuntu 20.04 ^\e[00m" "\e[00;31m#\e[00m"
 echo -e "\e[00;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\e[00m"
 echo -e "\e[00;33m# For best results, run as ROOT. Always be ROOT. *Evil grin*"
-echo -e "\e[00;33m# https://the-infosec.com"
 echo -e "\e[00;33m# $version\e[00m\n" |tee -a $report 2>/dev/null	
 echo -e "\e[00;31m#########################################################\e[00m"		
 }
@@ -23,10 +22,9 @@ while getopts "h:k:r:e:t" option; do
 done
 
 echo -e "\n\e[00;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\e[00m" |tee -a $report 2>/dev/null
-echo -e "\e[00;31m#\e[00m" "\e[00;33m Nix Audit Script ^Tested on RHEL 6,7... CentOS 6,7 ^\e[00m" "\e[00;31m#\e[00m" |tee -a $report 2>/dev/null
+echo -e "\e[00;31m#\e[00m" "\e[00;33m Nix Audit Script ^Tested Ubuntu 20.04 ^\e[00m" "\e[00;31m#\e[00m" |tee -a $report 2>/dev/null
 echo -e "\e[00;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\e[00m" |tee -a $report 2>/dev/null
 echo -e "\e[00;33m# For best results, run as ROOT. Always be ROOT. *Evil grin*"
-echo -e "\e[00;33m# https://the-infosec.com"
 echo -e "\e[00;33m# $version\e[00m\n" |tee -a $report 2>/dev/null
 echo -e "\e[00;31m#########################################################\e[00m"
 
@@ -160,7 +158,8 @@ fi
 echo For best results use root.** Always be root** *Evil grin* Credits, bugs, comments >>cto@the-infosec.com
 
 #The script doesn't change any config to your system, only many greps :-)
-# ***yum-update manenos*
+# ***
+-update manenos*
 
 FSTAB='/etc/fstab'
 YUM_CONF='/etc/yum.conf'
