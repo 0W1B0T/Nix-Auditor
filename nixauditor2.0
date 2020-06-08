@@ -750,9 +750,10 @@ function logrotate_cfg {
   local tmp_data="/tmp/logrotate.tmp.${timestamp}"
   local file_list="/var/log/messages /var/log/secure /var/log/maillog /var/log/spooler /var/log/boot.log /var/log/cron"
   local line_num
+  local new_num
   line_num=$(grep -n '{' "${LOGR_SYSLOG}" | cut -d: -f1)
-  line_num=$((${line_num} - 1))
-  head -${line_num} "${LOGR_SYSLOG}" > ${tmp_data}
+  new_num=$((${line_num} - 1))
+  head -${new_num} "${LOGR_SYSLOG}" > ${tmp_data}
   for file in ${file_list} ; do
     grep -q "${file}" ${tmp_data} || return
   done
@@ -1537,40 +1538,40 @@ function main {
   # CIS 5.1.6 This benchmark is only applicable to rsyslog loghosts
 
   # CIS 5.2.1.1 Audit Log Storage Size should be configured
-  #func_wrapper audit_log_storage_size
+  func_wrapper audit_log_storage_size
 
   # CIS 5.2.1.2 Disable System on Audit Log Full
-  #func_wrapper dis_on_audit_log_full
+  func_wrapper dis_on_audit_log_full
 
   # CIS 5.2.1.3 Disable System on Audit Log Full
-  #func_wrapper keep_all_audit_info
+  func_wrapper keep_all_audit_info
 
   # CIS 5.2.2 auditd should be enabled
-  #func_wrapper check_svc_enabled auditd
+  func_wrapper check_svc_enabled auditd
 
   # CIS 5.2.3
- # func_wrapper audit_procs_prior_2_auditd
+ func_wrapper audit_procs_prior_2_auditd
 
   # CIS 5.2.4 Record events that modify date & time info
  # func_wrapper audit_date_time
 
   # CIS 5.2.5 Record events that modify user & group info
-  #func_wrapper audit_user_group
+  func_wrapper audit_user_group
 
   # CIS 5.2.6 Record events that modify the system's network env
-  #func_wrapper audit_network_env
+  func_wrapper audit_network_env
 
   # CIS 5.2.7 Record events that modify the system's Mandatory Access Controls
- # func_wrapper audit_sys_mac
+ func_wrapper audit_sys_mac
 
   # CIS 5.2.8 Verify Collection Login and Logout events is configured
   #func_wrapper audit_logins_logouts
 
   # CIS 5.2.9 Verify Collection of Session Initiation info is configured
-  #func_wrapper audit_session_init
+  func_wrapper audit_session_init
 
   # CIS 5.2.10 Verify Collection of Discretionary Access Control permission modification events
-  #func_wrapper audit_dac_perm_mod_events
+  func_wrapper audit_dac_perm_mod_events
 
   # CIS 5.2.11 Verify collection of unsuccessful unauthorized access attempts to files
   func_wrapper unsuc_unauth_acc_attempts
