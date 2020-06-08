@@ -911,7 +911,7 @@ function ungrouped_files {
 }
 
 function suid_exes {
-  # For every suid exe on the host use the rpm cmd to verify that it should be suid executable
+  # For ey suid exe on the host use the rpm cmd to verify that it should be suid executable
   # If the rpm cmd returns no output then the rpm is as it was when it was installed so no prob
   local suid_exes
   suid_exes="$(df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -4000 -print)"
@@ -1272,31 +1272,31 @@ function main {
   func_wrapper test_disable_mounting udf
 
   # CIS 1.2.1 Check that the CentOS GPG Key is Installed
-  func_wrapper centos_gpg_key_installed
+  #func_wrapper centos_gpg_key_installed
 
   # CIS 1.2.2 Check that gpgcheck is globally activated
-  func_wrapper yum_gpgcheck
+  #func_wrapper yum_gpgcheck
 
   # CIS 1.2.3 Check software package updates with yum
-  func_wrapper yum_update
+  #func_wrapper yum_update
   
   # CIS 1.2.4 Verify package integrity using RPM
-  func_wrapper pkg_integrity
+  #func_wrapper pkg_integrity
   
   # CIS 1.3.1 Check that the AIDE rpm is installed
-  func_wrapper rpm_installed aide
+ # func_wrapper rpm_installed aide
   
   # CIS 1.3.2 Check periodic execution of file integrity (that aide runs from cron)
   func_wrapper verify_aide_cron
 
   # CIS 1.4.1 Check that SELinux is not disabled in /boot/grub2/grub.cfg 
-  func_wrapper verify_selinux_grubcfg
+  #func_wrapper verify_selinux_grubcfg
 
   # CIS 1.4.2 Verify SELinux configured state in /etc/selinux/config
-  func_wrapper verify_selinux_state
+  #func_wrapper verify_selinux_state
 
   # CIS 1.4.3 Verify SELinux policy in /etc/selinux/config
-  func_wrapper verify_selinux_policy
+ # func_wrapper verify_selinux_policy
 
   # CIS 1.4.4 Check setroubleshoot RPM is not installed
   func_wrapper rpm_not_installed setroubleshoot 
@@ -1398,7 +1398,7 @@ function main {
   func_wrapper rpm_not_installed dhcp
 
   # CIS 3.6 NTP config
-  func_wrapper ntp_cfg
+  #func_wrapper ntp_cfg
 
   # CIS 3.7.1 Check LDAP RPMs are not installed
   func_wrapper rpm_not_installed openldap-servers
@@ -1501,16 +1501,16 @@ function main {
   func_wrapper check_file_perms ${HOSTS_DENY} 644 
 
   # CIS 4.6.1 Check that CIS.conf file should disable uncommon network protocol dccp 
-  func_wrapper chk_cis_cnf dccp ${CIS_CNF}
+  #func_wrapper chk_cis_cnf dccp ${CIS_CNF}
 
   # CIS 4.6.2 Check that CIS.conf file should disable uncommon network protocol sctp 
-  func_wrapper chk_cis_cnf sctp ${CIS_CNF}
+  #func_wrapper chk_cis_cnf sctp ${CIS_CNF}
 
   # CIS 4.6.3 Check that CIS.conf file should disable uncommon network protocol rds 
-  func_wrapper chk_cis_cnf rds ${CIS_CNF}
+  #func_wrapper chk_cis_cnf rds ${CIS_CNF}
 
   # CIS 4.6.4 Check that CIS.conf file should disable uncommon network protocol tipc 
-  func_wrapper chk_cis_cnf tipc ${CIS_CNF}
+ # func_wrapper chk_cis_cnf tipc ${CIS_CNF}
   
   # CIS 4.7 Firewalld should be enabled
   func_wrapper check_svc_enabled firewalld  
@@ -1535,40 +1535,40 @@ function main {
   # CIS 5.1.6 This benchmark is only applicable to rsyslog loghosts
 
   # CIS 5.2.1.1 Audit Log Storage Size should be configured
-  func_wrapper audit_log_storage_size
+  #func_wrapper audit_log_storage_size
 
   # CIS 5.2.1.2 Disable System on Audit Log Full
-  func_wrapper dis_on_audit_log_full
+  #func_wrapper dis_on_audit_log_full
 
   # CIS 5.2.1.3 Disable System on Audit Log Full
-  func_wrapper keep_all_audit_info
+  #func_wrapper keep_all_audit_info
 
   # CIS 5.2.2 auditd should be enabled
-  func_wrapper check_svc_enabled auditd
+  #func_wrapper check_svc_enabled auditd
 
   # CIS 5.2.3
-  func_wrapper audit_procs_prior_2_auditd
+ # func_wrapper audit_procs_prior_2_auditd
 
   # CIS 5.2.4 Record events that modify date & time info
-  func_wrapper audit_date_time
+ # func_wrapper audit_date_time
 
   # CIS 5.2.5 Record events that modify user & group info
-  func_wrapper audit_user_group
+  #func_wrapper audit_user_group
 
   # CIS 5.2.6 Record events that modify the system's network env
-  func_wrapper audit_network_env
+  #func_wrapper audit_network_env
 
   # CIS 5.2.7 Record events that modify the system's Mandatory Access Controls
-  func_wrapper audit_sys_mac
+ # func_wrapper audit_sys_mac
 
   # CIS 5.2.8 Verify Collection Login and Logout events is configured
-  func_wrapper audit_logins_logouts
+  #func_wrapper audit_logins_logouts
 
   # CIS 5.2.9 Verify Collection of Session Initiation info is configured
-  func_wrapper audit_session_init
+  #func_wrapper audit_session_init
 
   # CIS 5.2.10 Verify Collection of Discretionary Access Control permission modification events
-  func_wrapper audit_dac_perm_mod_events
+  #func_wrapper audit_dac_perm_mod_events
 
   # CIS 5.2.11 Verify collection of unsuccessful unauthorized access attempts to files
   func_wrapper unsuc_unauth_acc_attempts
@@ -1592,13 +1592,13 @@ function main {
   func_wrapper kmod_lod_unlod
 
   # CIS 5.2.18 Verify collection of Kernel Module Loading and Unloading
-  func_wrapper audit_cfg_immut
+ # func_wrapper audit_cfg_immut
 
   # CIS 5.3 Log rotate should be configured
   func_wrapper logrotate_cfg
 
   # CIS 6.1.1 cron and anacron config
-  func_wrapper rpm_installed cronie-anacron
+  #func_wrapper rpm_installed cronie-anacron
 
   # CIS 6.1.2 enable crond daemon
   func_wrapper check_svc_enabled crond
@@ -1612,10 +1612,10 @@ function main {
   done
 
   # CIS 6.1.10 at daemon config
-  func_wrapper atd_cfg
+  #func_wrapper atd_cfg
 
   # CIS 6.1.11 restrict at/cron to authorized users
-  func_wrapper at_cron_auth_users
+ # func_wrapper at_cron_auth_users
 
   # CIS 6.2.1 SSH protocol should be 2
   func_wrapper chk_param "${SSHD_CFG}" Protocol 2
