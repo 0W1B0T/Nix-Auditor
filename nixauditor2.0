@@ -161,6 +161,10 @@ fi
 # ***
 #-update manenos*
 
+#Download Required Apps
+apt install auditd -y
+apt install rpm -y
+
 FSTAB='/etc/fstab'
 #YUM_CONF='/etc/yum.conf'
 GRUB_CFG='/boot/grub/grub.cfg'
@@ -176,9 +180,8 @@ HOSTS_ALLOW='/etc/hosts.allow'
 HOSTS_DENY='/etc/hosts.deny'
 #CIS_CNF='/etc/modprobe.d/CIS.conf'
 RSYSLOG_CNF='/etc/rsyslog.conf'
-#Download AuditD 
-#AUDITD_CNF='/etc/audit/auditd.conf'
-#AUDIT_RULES='/etc/audit/audit.rules'
+AUDITD_CNF='/etc/audit/auditd.conf'
+AUDIT_RULES='/etc/audit/audit.rules'
 LOGR_SYSLOG='/etc/logrotate.d/rsyslog'
 ANACRONTAB='/etc/anacrontab'
 CRONTAB='/etc/crontab'
@@ -267,7 +270,7 @@ function test_disable_mounting {
 #function centos_gpg_key_installed {
   # Test CentOS GPG Key is installed
  # local centos_off_str='gpg(CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>)'
-#  rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey | grep -q "${centos_off_str}" || return
+ #rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey | grep -q "${centos_off_str}" || return
 #}
 
 #function yum_gpgcheck {
@@ -280,13 +283,12 @@ function test_disable_mounting {
 #  yum -q check-update || return
 #}
 
-#install rpm
-#function pkg_integrity {
-  # Verify the installed packages by comparing the installed files against file info stored in the pkg
- # local rpm_out
-#  rpm_out="$(rpm -qVa | awk '$2 != "c" { print $0}')"
-#  [[ -z "${rpm_out}" ]] || return
-#}
+function pkg_integrity {
+   #Verify the installed packages by comparing the installed files against file info stored in the pkg
+ local rpm_out
+  rpm_out="$(rpm -qVa | awk '$2 != "c" { print $0}')"
+ [[ -z "${rpm_out}" ]] || return
+}
 
 #Good
 function rpm_installed {
@@ -445,9 +447,9 @@ function sticky_wrld_w_dirs {
 }
 
 #Good
-#function check_umask {
-#  cut -d\# -f1 /etc/sysconfig/init | grep -q "umask[[:space:]]027" || return
-#}
+function check_umask {
+  cut -d\# -f1 /etc/sysconfig/init | grep -q "umask[[:space:]]027" || return
+}
 
 #good
 function check_def_tgt {
@@ -507,30 +509,30 @@ function chk_cis_cnf {
   grep -q "install[[:space:]]${protocol}[[:space:]]/bin/true" ${file} || return
 } 
 
-#function chk_rsyslog_content {
+function chk_rsyslog_content {
   # rsyslog should be configured to send logs to a remote host
-  # grep output should resemble 
+   grep output should resemble 
   # *.* @@loghost.example.com
-#  grep -q "^*.*[^I][^I]*@" ${RSYSLOG_CNF} || return
-#}
+ grep -q "^*.*[^I][^I]*@" ${RSYSLOG_CNF} || return
+}
 
-#function audit_log_storage_size {
+function audit_log_storage_size {
   # Check the max size of the audit log file is configured
-#  cut -d\# -f1 ${AUDITD_CNF} | egrep -q "max_log_file[[:space:]]|max_log_file=" || return
-#}
+  cut -d\# -f1 ${AUDITD_CNF} | egrep -q "max_log_file[[:space:]]|max_log_file=" || return
+}
 
 
-#function dis_on_audit_log_full {
+function dis_on_audit_log_full {
   # Check auditd.conf is configured to notify the admin and halt the system when audit logs are full
- # cut -d\# -f2 ${AUDITD_CNF} | grep 'space_left_action' | cut -d= -f2 | tr -d '[[:space:]]' | grep -q 'email' || return
- # cut -d\# -f2 ${AUDITD_CNF} | grep 'action_mail_acct' | cut -d= -f2 | tr -d '[[:space:]]' | grep -q 'root' || return
-#  cut -d\# -f2 ${AUDITD_CNF} | grep 'admin_space_left_action' | cut -d= -f2 | tr -d '[[:space:]]' | grep -q 'halt' || return
-#}
+  cut -d\# -f2 ${AUDITD_CNF} | grep 'space_left_action' | cut -d= -f2 | tr -d '[[:space:]]' | grep -q 'email' || return
+  cut -d\# -f2 ${AUDITD_CNF} | grep 'action_mail_acct' | cut -d= -f2 | tr -d '[[:space:]]' | grep -q 'root' || return
+  cut -d\# -f2 ${AUDITD_CNF} | grep 'admin_space_left_action' | cut -d= -f2 | tr -d '[[:space:]]' | grep -q 'halt' || return
+}
 
-#function keep_all_audit_info {
+function keep_all_audit_info {
   # Check auditd.conf is configured to retain audit logs
-#  cut -d\# -f2 ${AUDITD_CNF} | grep 'max_log_file_action' | cut -d= -f2 | tr -d '[[:space:]]' | grep -q 'keep_logs' || return
-#}
+  cut -d\# -f2 ${AUDITD_CNF} | grep 'max_log_file_action' | cut -d= -f2 | tr -d '[[:space:]]' | grep -q 'keep_logs' || return
+}
 #good
 function audit_procs_prior_2_auditd {
   # Check lines that start with linux have the audit=1 parameter set
@@ -538,206 +540,206 @@ function audit_procs_prior_2_auditd {
   [[ -z "${grep_grub}" ]] || return
 }
 
-#function audit_date_time {
+function audit_date_time {
   # Confirm that the time-change lines specified below do appear in the audit.rules file
-#  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-S[[:space:]]+settimeofday" \
- # | egrep "\-S[[:space:]]+adjtimex" | egrep "\-F[[:space:]]+arch=b64" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-S[[:space:]]+settimeofday" \
-  #| egrep "\-S[[:space:]]+adjtimex" | egrep "\-F[[:space:]]+arch=b32" | egrep "\-S[[:space:]]+stime" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-F[[:space:]]+arch=b64" \
-  #| egrep "\-S[[:space:]]+clock_settime" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-F[[:space:]]+arch=b32" \
-  #| egrep "\-S[[:space:]]+clock_settime" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/localtime" || return
-#}
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-S[[:space:]]+settimeofday" \
+  | egrep "\-S[[:space:]]+adjtimex" | egrep "\-F[[:space:]]+arch=b64" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-S[[:space:]]+settimeofday" \
+  | egrep "\-S[[:space:]]+adjtimex" | egrep "\-F[[:space:]]+arch=b32" | egrep "\-S[[:space:]]+stime" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-F[[:space:]]+arch=b64" \
+  | egrep "\-S[[:space:]]+clock_settime" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-F[[:space:]]+arch=b32" \
+  | egrep "\-S[[:space:]]+clock_settime" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+time-change" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/localtime" || return
+}
 
-#function audit_user_group {
+function audit_user_group {
  # # Confirm that the identity lines specified below do appear in the audit.rules file
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/group" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/passwd" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/gshadow" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/shadow" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/security\/opasswd" || return
-#}
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/group" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/passwd" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/gshadow" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/shadow" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+identity" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/security\/opasswd" || return
+}
 
-#function audit_network_env {
+function audit_network_env {
   # Confirm that the system-locale lines specified below do appear in the audit.rules file
   3cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-S[[:space:]]+sethostname" \
-  #| egrep "\-S[[:space:]]+setdomainname" | egrep "\-F[[:space:]]+arch=b64" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-S[[:space:]]+sethostname" \
-  #| egrep "\-S[[:space:]]+setdomainname" | egrep "\-F[[:space:]]+arch=b32" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/issue" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/issue.net" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/hosts" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-p[[:space:]]+wa" \
- # | egrep -q "\-w[[:space:]]+\/etc\/sysconfig\/network" || return
-#}
+  | egrep "\-S[[:space:]]+setdomainname" | egrep "\-F[[:space:]]+arch=b64" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-S[[:space:]]+sethostname" \
+  | egrep "\-S[[:space:]]+setdomainname" | egrep "\-F[[:space:]]+arch=b32" | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/issue" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/issue.net" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/hosts" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+system-locale" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/sysconfig\/network" || return
+}
 
-#function audit_logins_logouts {
+function audit_logins_logouts {
  # # Confirm that the logins lines specified below do appear in the audit.rules file
   3cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+logins" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/var\/log\/faillog" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+logins" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/var\/log\/lastlog" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+logins" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/var\/log\/tallylog" || return
-#}
+  | egrep -q "\-w[[:space:]]+\/var\/log\/faillog" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+logins" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/var\/log\/lastlog" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+logins" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/var\/log\/tallylog" || return
+}
 
-#function audit_session_init {
+function audit_session_init {
   # Confirm that the logins lines specified below do appear in the audit.rules file
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+session" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/var\/run\/utmp" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+session" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/var\/log\/wtmp" || return
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+session" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/var\/log\/btmp" || return
-#}
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+session" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/var\/run\/utmp" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+session" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/var\/log\/wtmp" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+session" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/var\/log\/btmp" || return
+}
 
-#function audit_sys_mac {
+function audit_sys_mac {
   # Confirm that the logins lines specified below do appear in the audit.rules file
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+MAC-policy" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/etc\/selinux\/" || return
-#}
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+MAC-policy" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/selinux\/" || return
+}
 
-#function audit_dac_perm_mod_events {
+function audit_dac_perm_mod_events {
   # Confirm that perm_mod lines matching the patterns below do appear in the audit.rules file
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+chmod" \
-  #| egrep "\-S[[:space:]]+fchmod" | egrep "\-S[[:space:]]+fchmodat" | egrep "\-F[[:space:]]+arch=b64" \
-  #| egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+chmod" \
+  | egrep "\-S[[:space:]]+fchmod" | egrep "\-S[[:space:]]+fchmodat" | egrep "\-F[[:space:]]+arch=b64" \
+  | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+chmod" \
-  #| egrep "\-S[[:space:]]+fchmod" | egrep "\-S[[:space:]]+fchmodat" | egrep "\-F[[:space:]]+arch=b32" \
-  #| egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+chmod" \
+  | egrep "\-S[[:space:]]+fchmod" | egrep "\-S[[:space:]]+fchmodat" | egrep "\-F[[:space:]]+arch=b32" \
+  | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-#  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+chown" \
- # | egrep "\-S[[:space:]]+fchown" | egrep "\-S[[:space:]]+fchownat" | egrep "\-S[[:space:]]+fchown" \
-  #| egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+ cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+chown" \
+  | egrep "\-S[[:space:]]+fchown" | egrep "\-S[[:space:]]+fchownat" | egrep "\-S[[:space:]]+fchown" \
+  | egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+chown" \
-  #| egrep "\-S[[:space:]]+fchown" | egrep "\-S[[:space:]]+fchownat" | egrep "\-S[[:space:]]+fchown" \
-  #| egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+chown" \
+  | egrep "\-S[[:space:]]+fchown" | egrep "\-S[[:space:]]+fchownat" | egrep "\-S[[:space:]]+fchown" \
+  | egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
   
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+setxattr" \
- # | egrep "\-S[[:space:]]+lsetxattr" | egrep "\-S[[:space:]]+fsetxattr" | egrep "\-S[[:space:]]+removexattr" \
- # | egrep "\-S[[:space:]]+lremovexattr" | egrep "\-S[[:space:]]+fremovexattr" | egrep "\-F[[:space:]]+arch=b64" \
- # | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+setxattr" \
+ | egrep "\-S[[:space:]]+lsetxattr" | egrep "\-S[[:space:]]+fsetxattr" | egrep "\-S[[:space:]]+removexattr" \
+  | egrep "\-S[[:space:]]+lremovexattr" | egrep "\-S[[:space:]]+fremovexattr" | egrep "\-F[[:space:]]+arch=b64" \
+  | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+setxattr" \
-  #| egrep "\-S[[:space:]]+lsetxattr" | egrep "\-S[[:space:]]+fsetxattr" | egrep "\-S[[:space:]]+removexattr" \
-  #| egrep "\-S[[:space:]]+lremovexattr" | egrep "\-S[[:space:]]+fremovexattr" | egrep "\-F[[:space:]]+arch=b32" \
-  #| egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-#}
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+perm_mod" | egrep "\-S[[:space:]]+setxattr" \
+  | egrep "\-S[[:space:]]+lsetxattr" | egrep "\-S[[:space:]]+fsetxattr" | egrep "\-S[[:space:]]+removexattr" \
+  | egrep "\-S[[:space:]]+lremovexattr" | egrep "\-S[[:space:]]+fremovexattr" | egrep "\-F[[:space:]]+arch=b32" \
+  | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+}
 
-#function unsuc_unauth_acc_attempts {
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+access" | egrep "\-S[[:space:]]+creat" \
-  #| egrep "\-S[[:space:]]+open" | egrep "\-S[[:space:]]+openat" | egrep "\-S[[:space:]]+truncate" \
-  #| egrep "\-S[[:space:]]+ftruncate" | egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" \
-  #| egrep "\-F[[:space:]]+auid\!=4294967295" | egrep "\-F[[:space:]]exit=\-EACCES" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+function unsuc_unauth_acc_attempts {
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+access" | egrep "\-S[[:space:]]+creat" \
+  | egrep "\-S[[:space:]]+open" | egrep "\-S[[:space:]]+openat" | egrep "\-S[[:space:]]+truncate" \
+  | egrep "\-S[[:space:]]+ftruncate" | egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" \
+  | egrep "\-F[[:space:]]+auid\!=4294967295" | egrep "\-F[[:space:]]exit=\-EACCES" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+access" | egrep "\-S[[:space:]]+creat" \
-  #| egrep "\-S[[:space:]]+open" | egrep "\-S[[:space:]]+openat" | egrep "\-S[[:space:]]+truncate" \
-  ##| egrep "\-S[[:space:]]+ftruncate" | egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" \
-  #| egrep "\-F[[:space:]]+auid\!=4294967295" | egrep "\-F[[:space:]]exit=\-EACCES" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+access" | egrep "\-S[[:space:]]+creat" \
+  | egrep "\-S[[:space:]]+open" | egrep "\-S[[:space:]]+openat" | egrep "\-S[[:space:]]+truncate" \
+  | egrep "\-S[[:space:]]+ftruncate" | egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" \
+  | egrep "\-F[[:space:]]+auid\!=4294967295" | egrep "\-F[[:space:]]exit=\-EACCES" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+access" | egrep "\-S[[:space:]]+creat" \
-  #| egrep "\-S[[:space:]]+open" | egrep "\-S[[:space:]]+openat" | egrep "\-S[[:space:]]+truncate" \
-  #| egrep "\-S[[:space:]]+ftruncate" | egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" \
-  #| egrep "\-F[[:space:]]+auid\!=4294967295" | egrep "\-F[[:space:]]exit=\-EPERM" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+access" | egrep "\-S[[:space:]]+creat" \
+  | egrep "\-S[[:space:]]+open" | egrep "\-S[[:space:]]+openat" | egrep "\-S[[:space:]]+truncate" \
+  | egrep "\-S[[:space:]]+ftruncate" | egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" \
+  | egrep "\-F[[:space:]]+auid\!=4294967295" | egrep "\-F[[:space:]]exit=\-EPERM" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+access" | egrep "\-S[[:space:]]+creat" \
-  #| egrep "\-S[[:space:]]+open" | egrep "\-S[[:space:]]+openat" | egrep "\-S[[:space:]]+truncate" \
-  #| egrep "\-S[[:space:]]+ftruncate" | egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" \
-  #| egrep "\-F[[:space:]]+auid\!=4294967295" | egrep "\-F[[:space:]]exit=\-EPERM" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+access" | egrep "\-S[[:space:]]+creat" \
+  | egrep "\-S[[:space:]]+open" | egrep "\-S[[:space:]]+openat" | egrep "\-S[[:space:]]+truncate" \
+  | egrep "\-S[[:space:]]+ftruncate" | egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" \
+  | egrep "\-F[[:space:]]+auid\!=4294967295" | egrep "\-F[[:space:]]exit=\-EPERM" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-#}
+}
 
-#function coll_priv_cmds {
- # local priv_cmds
-  #priv_cmds="$(find / -xdev \( -perm -4000 -o -perm -2000 \) -type f)"
-  #for cmd in ${priv_cmds} ; do
-   # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+privileged" | egrep "\-F[[:space:]]+path=${cmd}" \
-    #| egrep "\-F[[:space:]]+perm=x" | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
-    #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-  #done
-#}
+function coll_priv_cmds {
+  local priv_cmds
+  priv_cmds="$(find / -xdev \( -perm -4000 -o -perm -2000 \) -type f)"
+  for cmd in ${priv_cmds} ; do
+    cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+privileged" | egrep "\-F[[:space:]]+path=${cmd}" \
+    | egrep "\-F[[:space:]]+perm=x" | egrep "\-F[[:space:]]+auid>=1000" | egrep "\-F[[:space:]]+auid\!=4294967295" \
+    | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  done
+}
 
-#function coll_suc_fs_mnts {
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+mounts" | egrep "\-S[[:space:]]+mount" \
- # | egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" \
-  #| egrep "\-F[[:space:]]+auid\!=4294967295" \
-#  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+function coll_suc_fs_mnts {
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+mounts" | egrep "\-S[[:space:]]+mount" \
+  | egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" \
+  | egrep "\-F[[:space:]]+auid\!=4294967295" \
+ | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+mounts" | egrep "\-S[[:space:]]+mount" \
-  #| egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" \
-  #| egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-#}
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+mounts" | egrep "\-S[[:space:]]+mount" \
+  | egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" \
+  | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+}
 
-#function coll_file_del_events {
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+delete" | egrep "\-S[[:space:]]+unlink" \
-  #| egrep "\-F[[:space:]]+arch=b64" | egrep "\-S[[:space:]]+unlinkat" | egrep "\-S[[:space:]]+rename" \
-  #| egrep "\-S[[:space:]]+renameat" | egrep "\-F[[:space:]]+auid>=1000" \
-  #| egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+function coll_file_del_events {
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+delete" | egrep "\-S[[:space:]]+unlink" \
+  | egrep "\-F[[:space:]]+arch=b64" | egrep "\-S[[:space:]]+unlinkat" | egrep "\-S[[:space:]]+rename" \
+  | egrep "\-S[[:space:]]+renameat" | egrep "\-F[[:space:]]+auid>=1000" \
+  | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+delete" | egrep "\-S[[:space:]]+unlink" \
-  #| egrep "\-F[[:space:]]+arch=b32" | egrep "\-S[[:space:]]+unlinkat" | egrep "\-S[[:space:]]+rename" \
-  #| egrep "\-S[[:space:]]+renameat" | egrep "\-F[[:space:]]+auid>=1000" \
-  #| egrep "\-F[[:space:]]+auid\!=4294967295" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+delete" | egrep "\-S[[:space:]]+unlink" \
+  | egrep "\-F[[:space:]]+arch=b32" | egrep "\-S[[:space:]]+unlinkat" | egrep "\-S[[:space:]]+rename" \
+  | egrep "\-S[[:space:]]+renameat" | egrep "\-F[[:space:]]+auid>=1000" \
+  | egrep "\-F[[:space:]]+auid\!=4294967295" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-#}
+}
 
-#function coll_chg2_sysadm_scope {
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+scope" | egrep "\-p[[:space:]]+wa" \
- # | egrep -q "\-w[[:space:]]+\/etc\/sudoers" || return
+function coll_chg2_sysadm_scope {
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+scope" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/etc\/sudoers" || return
 
-#}
+}
 
-#function coll_sysadm_actions {
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+actions" | egrep "\-p[[:space:]]+wa" \
-  #| egrep -q "\-w[[:space:]]+\/var\/log\/sudo.log" || return
+function coll_sysadm_actions {
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+actions" | egrep "\-p[[:space:]]+wa" \
+  | egrep -q "\-w[[:space:]]+\/var\/log\/sudo.log" || return
 
-#}
+}
 
-#function kmod_lod_unlod {
- # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
- # | egrep -q "\-w[[:space:]]+\/sbin\/insmod" || return
+function kmod_lod_unlod {
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
+  | egrep -q "\-w[[:space:]]+\/sbin\/insmod" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
-  #| egrep -q "\-w[[:space:]]+\/sbin\/rmmod" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
+  | egrep -q "\-w[[:space:]]+\/sbin\/rmmod" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
-  #| egrep -q "\-w[[:space:]]+\/sbin\/modprobe" || return
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
+  | egrep -q "\-w[[:space:]]+\/sbin\/modprobe" || return
 
-  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-S[[:space:]]+delete_module" \
-  #| egrep "\-F[[:space:]]+arch=b64" | egrep "\-S[[:space:]]+init_module" \
-  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-#}
+  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-S[[:space:]]+delete_module" \
+  | egrep "\-F[[:space:]]+arch=b64" | egrep "\-S[[:space:]]+init_module" \
+  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+}
 
-#function audit_cfg_immut {
-  # There should be a "-e 2" at the end of the audit.rules file
- # cut -d\# -f1 ${AUDIT_RULES} | egrep -q "^-e[[:space:]]+2" || return
-#}
+function audit_cfg_immut {
+   There should be a "-e 2" at the end of the audit.rules file
+  cut -d\# -f1 ${AUDIT_RULES} | egrep -q "^-e[[:space:]]+2" || return
+}
 
 #good
 function logrotate_cfg {
