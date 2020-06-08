@@ -684,61 +684,62 @@ function audit_procs_prior_2_auditd {
  # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+mounts" | egrep "\-S[[:space:]]+mount" \
  # | egrep "\-F[[:space:]]+arch=b64" | egrep "\-F[[:space:]]+auid>=1000" \
   #| egrep "\-F[[:space:]]+auid\!=4294967295" \
-  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+#  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+mounts" | egrep "\-S[[:space:]]+mount" \
-  | egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" \
-  | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-}
+ # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+mounts" | egrep "\-S[[:space:]]+mount" \
+  #| egrep "\-F[[:space:]]+arch=b32" | egrep "\-F[[:space:]]+auid>=1000" \
+  #| egrep "\-F[[:space:]]+auid\!=4294967295" \
+  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+#}
 
-function coll_file_del_events {
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+delete" | egrep "\-S[[:space:]]+unlink" \
-  | egrep "\-F[[:space:]]+arch=b64" | egrep "\-S[[:space:]]+unlinkat" | egrep "\-S[[:space:]]+rename" \
-  | egrep "\-S[[:space:]]+renameat" | egrep "\-F[[:space:]]+auid>=1000" \
-  | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+#function coll_file_del_events {
+ # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+delete" | egrep "\-S[[:space:]]+unlink" \
+  #| egrep "\-F[[:space:]]+arch=b64" | egrep "\-S[[:space:]]+unlinkat" | egrep "\-S[[:space:]]+rename" \
+  #| egrep "\-S[[:space:]]+renameat" | egrep "\-F[[:space:]]+auid>=1000" \
+  #| egrep "\-F[[:space:]]+auid\!=4294967295" \
+  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+delete" | egrep "\-S[[:space:]]+unlink" \
-  | egrep "\-F[[:space:]]+arch=b32" | egrep "\-S[[:space:]]+unlinkat" | egrep "\-S[[:space:]]+rename" \
-  | egrep "\-S[[:space:]]+renameat" | egrep "\-F[[:space:]]+auid>=1000" \
-  | egrep "\-F[[:space:]]+auid\!=4294967295" \
-  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+delete" | egrep "\-S[[:space:]]+unlink" \
+  #| egrep "\-F[[:space:]]+arch=b32" | egrep "\-S[[:space:]]+unlinkat" | egrep "\-S[[:space:]]+rename" \
+  #| egrep "\-S[[:space:]]+renameat" | egrep "\-F[[:space:]]+auid>=1000" \
+  #| egrep "\-F[[:space:]]+auid\!=4294967295" \
+  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
 
-}
+#}
 
-function coll_chg2_sysadm_scope {
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+scope" | egrep "\-p[[:space:]]+wa" \
-  | egrep -q "\-w[[:space:]]+\/etc\/sudoers" || return
+#function coll_chg2_sysadm_scope {
+ # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+scope" | egrep "\-p[[:space:]]+wa" \
+ # | egrep -q "\-w[[:space:]]+\/etc\/sudoers" || return
 
-}
+#}
 
-function coll_sysadm_actions {
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+actions" | egrep "\-p[[:space:]]+wa" \
-  | egrep -q "\-w[[:space:]]+\/var\/log\/sudo.log" || return
+#function coll_sysadm_actions {
+ # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+actions" | egrep "\-p[[:space:]]+wa" \
+  #| egrep -q "\-w[[:space:]]+\/var\/log\/sudo.log" || return
 
-}
+#}
 
-function kmod_lod_unlod {
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
-  | egrep -q "\-w[[:space:]]+\/sbin\/insmod" || return
+#function kmod_lod_unlod {
+ # cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
+ # | egrep -q "\-w[[:space:]]+\/sbin\/insmod" || return
 
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
-  | egrep -q "\-w[[:space:]]+\/sbin\/rmmod" || return
+  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
+  #| egrep -q "\-w[[:space:]]+\/sbin\/rmmod" || return
 
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
-  | egrep -q "\-w[[:space:]]+\/sbin\/modprobe" || return
+  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-p[[:space:]]+x" \
+  #| egrep -q "\-w[[:space:]]+\/sbin\/modprobe" || return
 
-  cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-S[[:space:]]+delete_module" \
-  | egrep "\-F[[:space:]]+arch=b64" | egrep "\-S[[:space:]]+init_module" \
-  | egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
-}
+  #cut -d\# -f1 ${AUDIT_RULES} | egrep "\-k[[:space:]]+modules" | egrep "\-S[[:space:]]+delete_module" \
+  #| egrep "\-F[[:space:]]+arch=b64" | egrep "\-S[[:space:]]+init_module" \
+  #| egrep -q "\-a[[:space:]]+always,exit|\-a[[:space:]]+exit,always" || return
+#}
 
-function audit_cfg_immut {
+#function audit_cfg_immut {
   # There should be a "-e 2" at the end of the audit.rules file
-  cut -d\# -f1 ${AUDIT_RULES} | egrep -q "^-e[[:space:]]+2" || return
-}
+ # cut -d\# -f1 ${AUDIT_RULES} | egrep -q "^-e[[:space:]]+2" || return
+#}
 
+#good
 function logrotate_cfg {
   [[ -f "${LOGR_SYSLOG}" ]] || return
 
@@ -757,21 +758,21 @@ function logrotate_cfg {
 }
 
 
-function atd_cfg {
- [[ ! -f ${AT_DENY} ]] || return 
- [[ -f ${AT_ALLOW} ]] || return 
- check_root_owns "${AT_ALLOW}"
- check_file_perms "${AT_ALLOW}" 600 
-}
+#function atd_cfg {
+ #[[ ! -f ${AT_DENY} ]] || return 
+ ##[[ -f ${AT_ALLOW} ]] || return 
+ #check_root_owns "${AT_ALLOW}"
+ #check_file_perms "${AT_ALLOW}" 600 
+#}
 
-function at_cron_auth_users {
- [[ ! -f ${AT_DENY} ]] || return 
- [[ ! -f ${CRON_DENY} ]] || return 
- check_root_owns "${CRON_ALLOW}"
- check_root_owns "${AT_ALLOW}"
- check_file_perms "${CRON_ALLOW}" 600 
- check_file_perms "${AT_ALLOW}" 600 
-}
+#function at_cron_auth_users {
+ #[[ ! -f ${AT_DENY} ]] || return 
+ #[[ ! -f ${CRON_DENY} ]] || return 
+ #check_root_owns "${CRON_ALLOW}"
+ #check_root_owns "${AT_ALLOW}"
+ #check_file_perms "${CRON_ALLOW}" 600 
+ #check_file_perms "${AT_ALLOW}" 600 
+#}
 
 function chk_param {
   local file="${1}" 
@@ -808,35 +809,35 @@ function pass_hash_algo {
   authconfig --test | grep 'hashing' | grep -q "${algo}" || return
 }
 
-function pass_req_params {
+#function pass_req_params {
   # verify the pam_pwquality.so params in /etc/pam.d/system-auth
-  grep pam_pwquality.so ${SYSTEM_AUTH} | grep 'password' | grep 'requisite' | grep 'try_first_pass' | grep 'local_users_only' | grep 'retry=3' | grep -q 'authtok_type=' || return
-  grep -q 'minlen=14' ${PWQUAL_CNF} || return
-  grep -q 'dcredit=-1' ${PWQUAL_CNF} || return
-  grep -q 'ucredit=-1' ${PWQUAL_CNF} || return
-  grep -q 'ocredit=-1' ${PWQUAL_CNF} || return
-  grep -q 'lcredit=-1' ${PWQUAL_CNF} || return
-}
+ # grep pam_pwquality.so ${SYSTEM_AUTH} | grep 'password' | grep 'requisite' | grep 'try_first_pass' | grep 'local_users_only' | grep 'retry=3' | grep -q 'authtok_type=' || return
+ # grep -q 'minlen=14' ${PWQUAL_CNF} || return
+ # grep -q 'dcredit=-1' ${PWQUAL_CNF} || return
+  #grep -q 'ucredit=-1' ${PWQUAL_CNF} || return
+  #grep -q 'ocredit=-1' ${PWQUAL_CNF} || return
+  #grep -q 'lcredit=-1' ${PWQUAL_CNF} || return
+#}
 
-function failed_pass_lock {
- egrep "auth[[:space:]]+required" ${PASS_AUTH} | grep -q 'pam_deny.so' || return
- egrep "auth[[:space:]]+required" ${PASS_AUTH} | grep 'pam_faillock.so' | grep 'preauth' | grep 'audit' | grep 'silent' | grep 'deny=5' | grep -q 'unlock_time=900' || return
- grep 'auth' ${PASS_AUTH} | grep 'pam_unix.so' | egrep -q "\[success=1[[:space:]]+default=bad\]" || return
- grep 'auth' ${PASS_AUTH} | grep 'pam_faillock.so' | grep 'authfail' | grep 'audit' | grep 'deny=5' | grep 'unlock_time=900' | egrep -q "\[default=die\]" || return
- egrep "auth[[:space:]]+sufficient" ${PASS_AUTH} | grep 'pam_faillock.so' | grep 'authsucc' | grep 'audit' | grep 'deny=5' | grep -q 'unlock_time=900' || return
- egrep "auth[[:space:]]+required" ${PASS_AUTH} | grep -q 'pam_deny.so' || return
+#function failed_pass_lock {
+ #egrep "auth[[:space:]]+required" ${PASS_AUTH} | grep -q 'pam_deny.so' || return
+ #egrep "auth[[:space:]]+required" ${PASS_AUTH} | grep 'pam_faillock.so' | grep 'preauth' | grep 'audit' | grep 'silent' | grep 'deny=5' | grep -q 'unlock_time=900' || return
+ #grep 'auth' ${PASS_AUTH} | grep 'pam_unix.so' | egrep -q "\[success=1[[:space:]]+default=bad\]" || return
+ #grep 'auth' ${PASS_AUTH} | grep 'pam_faillock.so' | grep 'authfail' | grep 'audit' | grep 'deny=5' | grep 'unlock_time=900' | egrep -q "\[default=die\]" || return
+ #egrep "auth[[:space:]]+sufficient" ${PASS_AUTH} | grep 'pam_faillock.so' | grep 'authsucc' | grep 'audit' | grep 'deny=5' | grep -q 'unlock_time=900' || return
+ #egrep "auth[[:space:]]+required" ${PASS_AUTH} | grep -q 'pam_deny.so' || return
 
- egrep "auth[[:space:]]+required" ${SYSTEM_AUTH} | grep -q 'pam_env.so' || return
- egrep "auth[[:space:]]+required" ${SYSTEM_AUTH} | grep 'pam_faillock.so' | grep 'preauth' | grep 'audit' | grep 'silent' | grep 'deny=5' | grep -q 'unlock_time=900' || return
- grep 'auth' ${SYSTEM_AUTH} | grep 'pam_unix.so' | egrep -q "\[success=1[[:space:]]+default=bad\]" || return
- grep 'auth' ${SYSTEM_AUTH} | grep 'pam_faillock.so' | grep 'authfail' | grep 'audit' | grep 'deny=5' | grep 'unlock_time=900' | egrep -q "\[default=die\]" || return
- egrep "auth[[:space:]]+sufficient" ${SYSTEM_AUTH} | grep 'pam_faillock.so' | grep 'authsucc' | grep 'audit' | grep 'deny=5' | grep -q 'unlock_time=900' || return
- egrep "auth[[:space:]]+required" ${SYSTEM_AUTH} | grep -q 'pam_deny.so' || return
-}
+ #egrep "auth[[:space:]]+required" ${SYSTEM_AUTH} | grep -q 'pam_env.so' || return
+ #egrep "auth[[:space:]]+required" ${SYSTEM_AUTH} | grep 'pam_faillock.so' | grep 'preauth' | grep 'audit' | grep 'silent' | grep 'deny=5' | grep -q 'unlock_time=900' || return
+ #grep 'auth' ${SYSTEM_AUTH} | grep 'pam_unix.so' | egrep -q "\[success=1[[:space:]]+default=bad\]" || return
+ #grep 'auth' ${SYSTEM_AUTH} | grep 'pam_faillock.so' | grep 'authfail' | grep 'audit' | grep 'deny=5' | grep 'unlock_time=900' | egrep -q "\[default=die\]" || return
+ #egrep "auth[[:space:]]+sufficient" ${SYSTEM_AUTH} | grep 'pam_faillock.so' | grep 'authsucc' | grep 'audit' | grep 'deny=5' | grep -q 'unlock_time=900' || return
+ #egrep "auth[[:space:]]+required" ${SYSTEM_AUTH} | grep -q 'pam_deny.so' || return
+#}
 
-function lim_passwd_reuse {
- egrep "auth[[:space:]]+sufficient" ${SYSTEM_AUTH} | grep 'pam_unix.so' | grep -q 'remember=5' || return
-}
+#function lim_passwd_reuse {
+ #egrep "auth[[:space:]]+sufficient" ${SYSTEM_AUTH} | grep 'pam_unix.so' | grep -q 'remember=5' || return
+#}
 
 function su_access {
   egrep "auth[[:space:]]+required" "${PAM_SU}" | grep 'pam_wheel.so' | grep -q 'use_uid' || return
@@ -878,23 +879,23 @@ function warning_banners {
   local motd
   local issue
   local issue_net
-  motd="$(egrep '(\\v|\\r|\\m|\\s)' ${MOTD})"
+  #motd="$(egrep '(\\v|\\r|\\m|\\s)' ${MOTD})"
   issue="$(egrep '(\\v|\\r|\\m|\\s)' ${ISSUE})"
   issue_net="$(egrep '(\\v|\\r|\\m|\\s)' ${ISSUE_NET})"
-  [[ -z "${motd}" ]] || return
+ # [[ -z "${motd}" ]] || return
   [[ -z "${issue}" ]] || return
   [[ -z "${issue_net}" ]] || return
 }
 
-function gnome_banner {
+#function gnome_banner {
   # On a host aiming to meet CIS requirements GNOME is unlikely to be installed 
   # Thus the function says if the file exists then it should have these lines in it
-  if [[ -f "${BANNER_MSG}" ]] ; then
-    egrep '[org/gnome/login-screen]' ${BANNER_MSG} || return
-    egrep 'banner-message-enable=true' ${BANNER_MSG} || return
-    egrep 'banner-message-text=' ${BANNER_MSG} || return
-  fi
-}
+  #if [[ -f "${BANNER_MSG}" ]] ; then
+    #egrep '[org/gnome/login-screen]' ${BANNER_MSG} || return
+   # egrep 'banner-message-enable=true' ${BANNER_MSG} || return
+  #  egrep 'banner-message-text=' ${BANNER_MSG} || return
+ # fi
+#}
 
 function unowned_files {
   local uo_files
